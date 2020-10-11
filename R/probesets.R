@@ -16,6 +16,11 @@ select_probeset <- function(data) {
 
 #' @export
 filter_probeset <- function(data, selected_probesets) {
+
+  if (missing(selected_probesets)) {
+    selected_probesets <- select_probeset(data)
+  }
+
   semi_join(data,
             filter(selected_probesets, selected_probeset),
             by = c("probeset_id", "gene_symbol"))
