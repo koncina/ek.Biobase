@@ -1,0 +1,18 @@
+Package: ek.Biobase
+Type: Package
+Title: Helper functions to handle Biobase objects
+Version: 0.0.0.9000
+Authors@R: person("Eric", "Koncina", email = "mail@koncina.eu", role = c("aut", "cre"))
+Description: Helper functions to extract tidy expressions of genes of interest.
+    Provides some helper functions to tidy up the associated metadata.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: assertr,
+  GEOquery,
+  janitor,
+  rlang,
+  tibble,
+  tidyr,
+  tidyselect
+RoxygenNote: 7.1.1
