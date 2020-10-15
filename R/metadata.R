@@ -1,11 +1,23 @@
 NULL
 
+globalVariables(c(".rowid", "key_value", "key", "characteristic", "publication_date",
+                  "status"))
+
+#' Format the publication date found in GEO datasets
+#'
+#' @importFrom stringr str_detect str_remove
+#' @importFrom dplyr rename mutate ends_with
+#' @importFrom readr parse_date
+#'
+#' @param x A character vector containing the date to be formatted
+#'
 #' @export
 format_publication_date <- function(x) {
-  assertr::verify(x, str_detect(status, "^Public on")) %>%
-    rename(publication_date = status) %>%
-    mutate_at("publication_date", str_remove, "^Public on ") %>%
-    mutate_at(vars(ends_with("date")), parse_date, format = "%b %d %Y")
+  x <- assertr::verify(x, str_detect(status, "^Public on"))
+  x <- rename(x, publication_date = status)
+  mutate(x,
+         across(publication_date, str_remove, "^Public on "),
+         across(ends_with("date"), parse_date, format = "%b %d %Y"))
 }
 
 #' Tidy the GEO characteristics columns
@@ -15,9 +27,11 @@ format_publication_date <- function(x) {
 #' This function will separate the key value pairs and spread the variables into separate columns.
 #'
 #' @importFrom tidyselect vars_select
+#' @importFrom dplyr left_join one_of n_distinct across
 #' @importFrom rlang enquos
 #' @importFrom assertr verify
-#' @importFrom tidyr separate_rows separate unite gather
+#' @importFrom stringr str_trim
+#' @importFrom tidyr separate_rows separate unite pivot_longer pivot_wider
 #'
 #' @param data A tibble.
 #' @param ... columns containing the key value pairs.
@@ -30,7 +44,7 @@ tidy_key_values <- function(data, ...) {
   x <- pivot_longer(x, names_to = "characteristic", values_to = "key_value", c(-.rowid))
   x <- separate_rows(x, key_value, sep = ";")
   x <- separate(x, "key_value", c("key", "value"), ":[ ]?", extra = "merge", fill = "right")
-  x <- mutate_at(x, "key", str_trim, "both")
+  x <- mutate(x, across(key, str_trim, "both"))
   x <- unite(x, "key", characteristic, key, sep = "_")
   x <- pivot_wider(x, names_from = "key", values_from = "value")
   x <- verify(x, n_distinct(.rowid) == nrow(x))
@@ -42,8 +56,10 @@ tidy_key_values <- function(data, ...) {
 #' Extract Metadata from ExpressionSet with tidy characteristics columns
 #'
 #' @importFrom dplyr mutate_if
+#' @importFrom Biobase pData
 #' @importFrom janitor clean_names
 #' @importFrom tibble as_tibble
+#' @importFrom readr parse_character
 #' @importFrom tidyr starts_with
 #'
 #' @param x A GEO ExpressionSet

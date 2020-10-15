@@ -9,9 +9,12 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: assertr,
-  GEOquery,
+  Biobase,
+  dplyr,
   janitor,
+  readr,
   rlang,
+  stringr,
   tibble,
   tidyr,
   tidyselect
