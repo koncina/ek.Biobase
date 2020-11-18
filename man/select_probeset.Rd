@@ -4,7 +4,7 @@
 \alias{select_probeset}
 \title{Identify probeset exhibiting the highest expression variance}
 \usage{
-select_probeset(data)
+select_probeset(data, probeset_id_var = probeset_id, gene_id_var = gene_symbol)
 }
 \arguments{
 \item{data}{A tibble containing gene_symbol, probeset_id and expression columns}

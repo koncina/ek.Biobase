@@ -4,7 +4,12 @@
 \alias{filter_probeset}
 \title{Filter out the best probeset which is supposed to be specific and/or exhibiting the highest expression variance}
 \usage{
-filter_probeset(data, selected_probesets)
+filter_probeset(
+  data,
+  probeset_id_var = probeset_id,
+  gene_id_var = gene_symbol,
+  selected_probesets
+)
 }
 \arguments{
 \item{data}{A tibble containing gene_symbol, probeset_id and expression columns}

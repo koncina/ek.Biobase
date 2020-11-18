@@ -11,15 +11,15 @@ globalVariables(c("selected_probeset", "is_unspecific", "is_candidate", "only_un
 #' @param data A tibble containing gene_symbol, probeset_id and expression columns
 #'
 #' @export
-select_probeset <- function(data) {
+select_probeset <- function(data, probeset_id_var = probeset_id, gene_id_var = gene_symbol) {
 
-  if (nrow(data) == 0) return(tibble(gene_symbol = character(0),
-                                     probeset_id = character(0),
+  if (nrow(data) == 0) return(tibble({{gene_id_var}} := character(0),
+                                     {{probeset_id_var}} := character(0),
                                      selected_probeset = logical(0)))
 
-  x <- group_by(data, gene_symbol, probeset_id)
+  x <- group_by(data, {{gene_id_var}}, {{probeset_id_var}})
   x <- summarise(x, var = var(expression), .groups = "drop_last")
-  x <- mutate(x, is_unspecific = str_detect(probeset_id, "[xs]_at$"),
+  x <- mutate(x, is_unspecific = str_detect({{probeset_id_var}}, "[xs]_at$"),
            only_unspecific = all(is_unspecific),
            is_candidate = !xor(is_unspecific, only_unspecific),
            selected_probeset = var == max(var[is_candidate]))
@@ -33,13 +33,14 @@ select_probeset <- function(data) {
 #'
 #' @importFrom dplyr filter semi_join
 #' @export
-filter_probeset <- function(data, selected_probesets) {
+filter_probeset <- function(data, probeset_id_var = probeset_id, gene_id_var = gene_symbol, selected_probesets) {
 
   if (missing(selected_probesets)) {
-    selected_probesets <- select_probeset(data)
+    selected_probesets <- select_probeset(data, probeset_id_var = {{probeset_id_var}},
+                                          gene_id_var = {{gene_id_var}})
   }
 
   semi_join(data,
             filter(selected_probesets, selected_probeset),
-            by = c("probeset_id", "gene_symbol"))
+            by = c(quo_name(enquo(probeset_id_var)), quo_name(enquo(gene_id_var))))
 }
