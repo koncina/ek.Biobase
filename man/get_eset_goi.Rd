@@ -4,12 +4,14 @@
 \alias{get_eset_goi}
 \title{Extract genes of interest out of an ExpressionSet object}
 \usage{
-get_eset_goi(eset, goi, metadata)
+get_eset_goi(eset, goi, missing_as_na = FALSE, metadata)
 }
 \arguments{
 \item{eset}{An ExpressionSet objects.}
 
 \item{goi}{A character vector containing the gene symbols of the genes of interest}
+
+\item{missing_as_na}{A boolean. If TRUE will return NA expression values if a gene symbol is missing}
 
 \item{metadata}{metadata columns to join (tidyselect). If not set will return only the expression values.}
 }
