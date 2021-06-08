@@ -42,7 +42,8 @@ get_eset_goi <- function(eset, goi, missing_as_na = FALSE, metadata) {
   }
 
   x <- left_join(x, as_tibble(exprs(eset), rownames = "probeset_id"), by = "probeset_id")
-  x <- pivot_longer(x, names_to = "sample_id", values_to = "expression", -c(probeset_id, gene_symbol))
+  x <- pivot_longer(x, names_to = "sample_id", values_to = "expression", -c(probeset_id, gene_symbol)) %>%
+    mutate(across(expression, as.numeric)) # Why is this required now? Likely due to vctrs...
 
   if (!missing(metadata)) {
     x <- join_metadata(x, eset, {{metadata}})
