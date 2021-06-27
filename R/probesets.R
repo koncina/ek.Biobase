@@ -43,7 +43,7 @@ filter_probeset <- function(data, probeset_id_var = probeset_id, gene_id_var = g
   # If a probeset is NA we asked to replace missing gene symbols by NA in get_eset_goi...
   selected_probesets <- group_by(selected_probesets, gene_symbol) %>%
     mutate(selected_probeset = replace(selected_probeset,
-                                       is.na(probeset_id), c(TRUE, rep(FALSE, n() - 1))))
+                                       is.na({{probeset_id_var}}), c(TRUE, rep(FALSE, n() - 1))))
 
 
   semi_join(data,
